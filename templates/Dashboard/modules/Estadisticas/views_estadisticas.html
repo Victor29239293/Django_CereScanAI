@@ -1,0 +1,273 @@
+{% extends 'Dashboard/base.html' %} 
+{% load static %} 
+{% block content %}
+<style>
+    .header-gradient {
+      background-color: #1a252f;
+      padding: 1.8rem;
+      text-align: center;
+      border-radius: 10px;
+      color: #ffffff;
+      margin-bottom: 2.5rem;
+      font-size: 2.4rem;
+      font-weight: 700;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    .container-fullscreen {
+      background-color: #ffffff;
+      padding: 2rem;
+      max-width: 1100px;
+      margin: 0 auto;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+      border-radius: 15px;
+      font-family: 'Arial', sans-serif;
+    }
+    h1 {
+      font-size: 2.8rem;
+      color: #333333;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    /*  h2 {
+      font-size: 2.2rem;
+      color: #1a252f;
+      font-weight: 600;
+      text-align: center;
+    } */ 
+    p {
+      font-size: 1.2rem;
+      color: #555555;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+      text-align: justify;
+    }
+    .tooltip {
+      position: absolute;
+      text-align: center;
+      width: 80px;
+      height: auto;
+      padding: 5px;
+      font: 12px sans-serif;
+      background: lightsteelblue;
+      border: 0px;
+      border-radius: 8px;
+      pointer-events: none;
+    }
+  </style>
+  
+  <h1>Estadísticas de Anomalías a lo Largo del Tiempo</h1>
+  
+  <div class="min-h-screen">
+    <div class="container-fullscreen">
+      <div class="header-gradient">
+        <h2>Estadísticas de Anomalías a lo Largo del Tiempo</h2>
+      </div>
+      
+      <p>El siguiente gráfico de área muestra la distribución de diferentes tipos de anomalías a lo largo del tiempo. Cada área representa un tipo de anomalía, proporcionando una visión general de cómo ha cambiado la frecuencia de cada tipo a lo largo del periodo registrado.</p>
+      
+      <div id="chart"></div>
+      
+      <p>El gráfico de barras de abajo compara el total de cada tipo de anomalía a lo largo del periodo de análisis. Esto facilita una comparación directa entre los tipos de anomalías en términos de cantidad acumulada.</p>
+      
+      <div id="bar-chart"></div>
+    </div>
+  </div>
+  
+
+
+<script src="https://d3js.org/d3.v6.min.js"></script>
+
+<script>
+
+  const data = {{ estadisticas_anomalias|safe }};
+  console.log("Datos de estadisticas_anomalias:", data);
+
+
+  const margin = { top: 50, right: 100, bottom: 50, left: 60 };
+  const width = 800 - margin.left - margin.right;
+  const height = 500 - margin.top - margin.bottom;
+
+  
+  const svg = d3.select("#chart")
+      .append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", `translate(${margin.left},${margin.top})`);
+
+
+  const colorScale = d3.scaleOrdinal()
+      .domain(["Tipo A", "Tipo B", "Tipo C"])  
+      .range(["#1f77b4", "#d62728", "#ff7f0e"]);
+
+
+  const parseDate = d3.timeParse("%Y-%m-%d");
+  data.forEach(d => d.fecha = parseDate(d.fecha));
+
+  const x = d3.scaleTime()
+      .domain(d3.extent(data, d => d.fecha))
+      .range([0, width]);
+
+  const y = d3.scaleLinear()
+      .domain([0, d3.max(data, d => d.count) * 1.1])
+      .nice()
+      .range([height, 0]);
+
+ 
+  svg.append("g")
+      .attr("class", "x-axis")
+      .attr("transform", `translate(0,${height})`)
+      .call(d3.axisBottom(x).tickSizeOuter(0))
+      .selectAll("text")
+      .attr("transform", "rotate(-45)")
+      .style("text-anchor", "end");
+
+  svg.append("g")
+      .attr("class", "y-axis")
+      .call(d3.axisLeft(y).ticks(6))
+      .call(g => g.select(".domain").remove());
+
+
+  const nestedData = d3.groups(data, d => d.tipo_anomalia);
+
+  const area = d3.area()
+      .x(d => x(d.fecha))
+      .y0(height)
+      .y1(d => y(d.count))
+      .curve(d3.curveMonotoneX);
+
+
+  nestedData.forEach(([key, values]) => {
+      svg.append("path")
+          .datum(values)
+          .attr("fill", colorScale(key))
+          .attr("fill-opacity", 0.2)
+          .attr("d", area);
+  });
+
+
+  const line = d3.line()
+      .x(d => x(d.fecha))
+      .y(d => y(d.count))
+      .curve(d3.curveMonotoneX);
+
+  nestedData.forEach(([key, values]) => {
+      svg.append("path")
+          .datum(values)
+          .attr("fill", "none")
+          .attr("stroke", colorScale(key))
+          .attr("stroke-width", 3)
+          .attr("d", line);
+  });
+
+  
+  nestedData.forEach(([key, values]) => {
+      svg.append("text")
+          .datum(values[values.length - 1])
+          .attr("transform", d => `translate(${x(d.fecha)},${y(d.count)})`)
+          .attr("x", 6)
+          .attr("dy", "0.35em")
+          .style("font-size", "12px")
+          .style("fill", colorScale(key))
+          .style("font-weight", "bold")
+          .text(key);
+  });
+
+  
+  const tooltip = d3.select("body").append("div")
+      .attr("class", "tooltip")
+      .style("opacity", 0);
+
+  nestedData.forEach(([key, values]) => {
+      svg.selectAll(`.dot-${key}`)
+          .data(values)
+          .enter()
+          .append("circle")
+          .attr("class", `dot dot-${key}`)
+          .attr("cx", d => x(d.fecha))
+          .attr("cy", d => y(d.count))
+          .attr("r", 4)
+          .style("fill", colorScale(key))
+          .style("opacity", 0)
+          .on("mouseover", function(event, d) {
+              d3.select(this).attr("r", 6);
+              tooltip.transition().duration(200).style("opacity", .9);
+              tooltip.html(`Fecha: ${d3.timeFormat("%Y-%m-%d")(d.fecha)}<br>Conteo: ${d.count}`)
+                  .style("left", (event.pageX + 5) + "px")
+                  .style("top", (event.pageY - 28) + "px");
+          })
+          .on("mouseout", function() {
+              d3.select(this).attr("r", 4);
+              tooltip.transition().duration(500).style("opacity", 0);
+          })
+          .transition()
+          .delay((d, i) => i * 50)
+          .style("opacity", 1);
+  });
+
+  
+  const barMargin = { top: 50, right: 30, bottom: 100, left: 60 };
+  const barWidth = 800 - barMargin.left - barMargin.right;
+  const barHeight = 500 - barMargin.top - barMargin.bottom;
+
+  const barSvg = d3.select("#bar-chart")
+      .append("svg")
+      .attr("width", barWidth + barMargin.left + barMargin.right)
+      .attr("height", barHeight + barMargin.top + barMargin.bottom)
+      .append("g")
+      .attr("transform", `translate(${barMargin.left},${barMargin.top})`);
+
+  
+  const anomalyCounts = d3.rollups(data, v => d3.sum(v, d => d.count), d => d.tipo_anomalia);
+  
+  const xBar = d3.scaleBand()
+      .domain(anomalyCounts.map(d => d[0]))
+      .range([0, barWidth])
+      .padding(0.2);
+
+  const yBar = d3.scaleLinear()
+      .domain([0, d3.max(anomalyCounts, d => d[1])])
+      .nice()
+      .range([barHeight, 0]);
+
+ 
+  barSvg.append("g")
+      .attr("class", "x-axis")
+      .attr("transform", `translate(0,${barHeight})`)
+      .call(d3.axisBottom(xBar))
+      .selectAll("text")
+      .attr("transform", "rotate(-45)")
+      .style("text-anchor", "end");
+
+  barSvg.append("g")
+      .attr("class", "y-axis")
+      .call(d3.axisLeft(yBar).ticks(6));
+
+  
+  barSvg.selectAll(".bar")
+      .data(anomalyCounts)
+      .enter()
+      .append("rect")
+      .attr("class", "bar")
+      .attr("x", d => xBar(d[0]))
+      .attr("y", d => yBar(d[1]))
+      .attr("width", xBar.bandwidth())
+      .attr("height", d => barHeight - yBar(d[1]))
+      .attr("fill", d => colorScale(d[0]));
+
+  
+  barSvg.selectAll(".label")
+      .data(anomalyCounts)
+      .enter()
+      .append("text")
+      .attr("class", "label")
+      .attr("x", d => xBar(d[0]) + xBar.bandwidth() / 2)
+      .attr("y", d => yBar(d[1]) - 5)
+      .attr("text-anchor", "middle")
+      .style("font-size", "12px")
+      .text(d => d[1]);
+
+      
+</script>
+{% endblock %}

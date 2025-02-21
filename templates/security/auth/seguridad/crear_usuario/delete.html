@@ -1,0 +1,26 @@
+{% extends 'Dashboard/base.html' %} 
+{% load static %}
+{% load widget_tweaks %}
+{% block content %}
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/security/modules/delete.css' %}">
+{% endblock css %}
+
+
+    <div class="container">
+        <h1>Confirmar eliminación</h1>
+        <p>¿Estás seguro de que deseas eliminar el módulo "{{ item.username }}"?</p>
+        <p class="warning">Esta acción no se puede deshacer.</p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+            <a href="{% url 'security:crear_usuario_view' %}" class="btn btn-secondary loader-load" >Cancelar</a>
+        </form>
+    </div>
+    {% if error %}
+    <div class="alert alert-danger" role="alert">
+        {{ error }}
+    </div>
+    {% endif %}
+
+{% endblock content %}

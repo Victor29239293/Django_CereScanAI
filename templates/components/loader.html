@@ -1,0 +1,53 @@
+<style>
+    .loader {
+        width: 50px;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        border: 8px solid lightblue;
+        border-right-color: orange;
+        animation: l2 1s infinite linear;
+    }
+
+    .contenedorLoader {
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: rgba(255, 255, 255, 0.5); 
+        backdrop-filter: blur(10px); 
+        position: fixed; 
+        top: 0;
+        left: 0;
+        z-index: 1000; 
+    }
+
+
+    @keyframes l2 {to{transform: rotate(1turn)}}
+</style>
+
+<script>
+    document.addEventListener("click", e => {
+        let elemento = e.target
+        const randomNumber = Math.floor(Math.random() * (7000 - 3000 + 1)) + 3000;
+        if (elemento.classList.contains("loader-load")) {
+
+            e.preventDefault()
+          let $contenedor = document.createElement("div")
+          $contenedor.classList.add("contenedorLoader")
+
+          let $loader = document.createElement("div")
+          $loader.classList.add("loader")
+
+          $contenedor.append($loader)
+
+          document.body.insertAdjacentElement("afterbegin", $contenedor)
+
+          setTimeout(() => {
+              $contenedor.remove()
+
+              window.open(e.target.getAttribute("href"), "_self")
+          }, randomNumber);
+        }
+      })
+</script>

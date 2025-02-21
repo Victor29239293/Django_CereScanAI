@@ -1,0 +1,65 @@
+{% extends 'index.html' %}
+{% load i18n %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/register.css' %}" />
+
+<div class="container py-5 d-flex justify-content-center">
+    <div class="col-lg-6 col-md-10 col-sm-12">
+        <div class="card shadow-lg p-5 rounded">
+            <h2 class="title text-center mb-4">{% trans "Complete tu Perfil" %}</h2>
+
+           
+            <div class="text-center mb-4">
+                <img id="imagePreview" src="{% static 'images/logo.png' %}" alt="Vista previa de imagen"
+                     class="img-thumbnail" style="width: 150px; height: 150px;">
+            </div>
+
+            <form class="signup" id="signup_form" method="post" action="{% url 'socialaccount_signup' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="row">
+                    {% for field in form %}
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }} {% if field.field.required %}*{% endif %}</label>
+                            {{ field }}
+                            {% if field.errors %}
+                            <div class="alert alert-danger mt-1">{{ field.errors }}</div>
+                            {% endif %}
+                        </div>
+                        {% if forloop.counter|divisibleby:2 and not forloop.last %}
+                            </div><div class="row"> 
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                {% if redirect_field_value %}
+                <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+                {% endif %}
+
+            
+                <div class="d-grid gap-2 mt-4">
+                    <button type="submit" class="submit btn btn-primary w-100">
+                        {% trans "Completar Registro" %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    document.getElementById("id_image").addEventListener("change", function (event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                document.getElementById("imagePreview").src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
+
+{% endblock %}

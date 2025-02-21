@@ -1,0 +1,38 @@
+{% extends 'index.html' %} {% load static socialaccount %} {% block content %}
+<link rel="stylesheet" href="{% static 'css/register.css' %}" />
+
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-6 col-md-8 col-sm-10">
+      <div class="card shadow-lg p-5 rounded">
+        <h2 class="title text-center mb-4">Gestión de Cuenta Google</h2>
+
+        <div class="text-center mb-4">
+        
+          <div class="alert alert-success">
+            <p>
+              Tu cuenta de Google está vinculada correctamente con el correo:
+              <strong>{{ social_account.extra_data.email }}</strong>
+            </p>
+
+           
+          </div>
+
+        </div>
+
+        {% if messages %} {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} text-center">
+          {{ message }}
+        </div>
+        {% endfor %} {% endif %}
+
+        <div class="text-center mt-4">
+          <a href="{% url 'security:perfil' %}" class="btn btn-secondary loader-load">
+            Volver al perfil
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

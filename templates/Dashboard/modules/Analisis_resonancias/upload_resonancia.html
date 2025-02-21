@@ -1,0 +1,283 @@
+{% extends 'Dashboard/base.html' %} {% load static %} {% block content %}
+<link
+  rel="stylesheet"
+  href="{% static 'css/modules/Analisis De Resonancias/upload_resonancias.css' %}"
+/>
+<script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script>
+<div class="min-h-screen">
+  <div class="container mx-auto fade-in">
+    <div class="header-gradient">
+      <h2 class="text-3xl font-bold">ANÁLISIS DE RESONANCIAS</h2>
+    </div>
+
+
+    <div class="grid-layout">
+
+      <div class="section-card">
+        <div class="section-header">Información del Paciente</div>
+        <div class="section-content">
+          <div class="profile-info-container">
+            <div class="profile-image">
+              {% if paciente.user.image %}
+              <a
+                href="{{ paciente.user.image.url }}"
+                data-fancybox="profile"
+                data-caption="Imagen de perfil"
+              >
+                <img
+                  src="{{ paciente.user.image.url }}"
+                  alt="Imagen de perfil"
+                />
+              </a>
+              {% else %}
+              <a
+                href="{% static 'images/perfil_usuario/default.png' %}"
+                data-fancybox="profile"
+                data-caption="Imagen de perfil predeterminada"
+              >
+                <img
+                  src="{% static 'images/perfil_usuario/default.png' %}"
+                  alt="Imagen de perfil predeterminada"
+                />
+              </a>
+              {% endif %}
+            </div>
+            <div class="profile-details">
+              <p>
+                <strong>Nombre:</strong> {{ paciente.user.first_name | upper }}
+              </p>
+              <p>
+                <strong>Apellido:</strong> {{ paciente.user.last_name | upper }}
+              </p>
+              <p><strong>Edad:</strong> {{ paciente.edad }}</p>
+              <p><strong>Dni:</strong> {{ paciente.user.dni }}</p>
+              <p><strong>Telefono:</strong> {{ paciente.user.phone }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="section-header">Información del Especialista</div>
+        <div class="section-content">
+          <div class="profile-info-container">
+            <div class="profile-image">
+              {% if user.image %}
+              <a
+                href="{{ user.image.url }}"
+                data-fancybox="profile"
+                data-caption="Imagen de perfil"
+              >
+                <img
+                  src="{{ user.image.url }}"
+                  alt="Imagen de perfil"
+                />
+              </a>
+              {% else %}
+              <a
+                href="{% static 'images/perfil_usuario/default.png' %}"
+                data-fancybox="profile"
+                data-caption="Imagen de perfil predeterminada"
+              >
+                <img
+                  src="{% static 'images/perfil_usuario/default.png' %}"
+                  alt="Imagen de perfil predeterminada"
+                />
+              </a>
+              {% endif %}
+            </div>
+            <div class="profile-details">
+              <p>
+                <strong>Nombre:</strong> {{ user.first_name | upper }}
+              </p>
+              <p>
+                <strong>Apellido:</strong> {{ user.last_name | upper }}
+              </p>
+              <p><strong>Edad:</strong> {{ user.edad }}</p>
+              <p><strong>Dni:</strong> {{ user.dni }}</p>
+              <p><strong>Telefono:</strong> {{ user.phone }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="section-card">
+        <div class="section-header">Subir Archivos de Resonancia</div>
+        <div class="section-content">
+          <form method="post" enctype="multipart/form-data" id="submitForm">
+            {% csrf_token %}
+
+            <div class="space-y-2">
+              {{ form.flair.label_tag }}
+
+              <div class="file-input-wrapper">
+                <button type="button" class="btn-secondary btn-custom">
+                  {{ form.flair }}
+                </button>
+              </div>
+              <div id="flairFileName" class="selected-file"></div>
+            </div>
+
+ 
+            <div class="space-y-2">
+              {{ form.t1ce.label_tag }}
+    
+              <div class="file-input-wrapper">
+                <button type="button" class="btn-secondary btn-custom">
+                  {{ form.t1ce }}
+                </button>
+              </div>
+              <div id="t1ceFileName" class="selected-file"></div>
+            </div>
+
+            <div class="flex justify-center gap-4 pt-4">
+              <a
+                href="{% url 'ScanAI:AnalisisView' %}"
+                class="btn-secondary btn-custom"
+                >Cancelar</a
+              >
+
+              <button
+                type="submit"
+                id="submitBtn"
+                class="btn-primary btn-custom"
+              >
+                Procesar Resonancia
+              </button>
+
+           
+              <button
+                type="button"
+                class="btn-primary btn-custom"
+                id="openModalBtn"
+                data-bs-toggle="modal"
+                data-bs-target="#confirmModal"
+              >
+                Guardar Información
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div
+        class="modal fade"
+        id="confirmModal"
+        tabindex="-1"
+        aria-labelledby="confirmModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="confirmModalLabel">
+                Confirmar Guardado
+              </h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Cerrar"
+              ></button>
+            </div>
+            <div class="modal-body">
+              ¿Estás seguro de que deseas guardar esta información?
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Cancelar
+              </button>
+              <button type="button" class="btn-primary" id="confirmSaveButton">
+                Confirmar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {% if resonancia.tipo_anomalia %}
+      <div class="section-card">
+        <div class="section-header">Resultados de Análisis</div>
+        <div class="section-content">
+          <div
+            class="alert {% if resonancia.tipo_anomalia == 'No se detectaron anomalías' %}alert-success{% else %}alert-error{% endif %}"
+          >
+            <p>
+              <strong>Tipo de Anomalía:</strong> {{ resonancia.tipo_anomalia }}
+            </p>
+            <p>
+              <strong>Severidad:</strong> {{ resonancia.severidad_anomalia }}
+            </p>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+
+      {% if processed_images %}
+      <div class="section-card">
+        <div class="section-header">Imágenes Procesadas</div>
+        <div class="section-content image-preview">
+          {% for img_url in processed_images %}
+          <a
+            href="{{ img_url }}"
+            data-fancybox="gallery"
+            data-caption="Imagen Procesada {{ forloop.counter }}"
+            {%
+            if
+            not
+            forloop.first
+            %}style="display: none"
+            {%
+            endif
+            %}
+          >
+            {% if forloop.first %}
+            <img
+              src="{{ img_url }}"
+              alt="Processed MRI {{ forloop.counter }}"
+            />
+            {% endif %}
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+
+      {% if tipo_anomalia %}
+      <div class="section-card">
+        <div class="section-header">Resultados de Análisis</div>
+        <div class="section-content">
+
+          <div
+            class="alert {% if tipo_anomalia == 'Anomalia Detectada' %}alert-error{% else %}alert-success{% endif %}"
+          >
+            <p><strong>Tipo de Anomalía:</strong> {{ tipo_anomalia }}</p>
+            <p><strong>Severidad:</strong> {{ severidad_anomalia }}</p>
+            {% if detected_anomalies %}
+            <p><strong>Detalles de las Anomalías Detectadas:</strong></p>
+            <ul>
+              {% for anomaly in detected_anomalies %}
+              <li>{{ anomaly }}</li>
+              {% endfor %}
+            </ul>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@4.0.25/dist/fancybox.css"
+/>
+<script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@4.0.25/dist/fancybox.umd.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'js/modules/upload_resonancia.js' %}"></script>
+
+{% endblock %}

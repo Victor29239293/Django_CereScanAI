@@ -1,0 +1,44 @@
+{% extends 'Dashboard/base.html' %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/modules/Gestion De Informes/index.css' %}" />
+<div class="min-h-screen">
+  <div class="container mx-auto fade-in">
+    <div class="header-gradient">
+      <h2 class="text-3xl font-semibold">Gestión de Informes</h2>
+    </div>
+
+
+    <div class="search-bar">
+      <input
+        type="text"
+        id="search-input"
+        class="search-input"
+        placeholder="🔍 Buscar por nombre o DNI..."
+        onkeyup="filterPatients()"
+      />
+    </div>
+
+    <div class="grid-layout" id="patient-cards">
+      {% for paciente in pacientes_con_resonancias %}
+        <div class="patient-card" data-name="{{ paciente.user.get_full_name }}" data-dni="{{ paciente.user.dni }}">
+          {% if paciente.user.image %}
+            <img src="{{ paciente.user.image.url }}" alt="Foto de {{ paciente.user.get_full_name }}" class="patient-photo" />
+          {% else %}
+            <i class="fas fa-user-circle folder-icon"></i>
+          {% endif %}
+          <div class="patient-name">{{ paciente.user.get_full_name }}</div>
+          <div class="patient-dni">DNI: {{ paciente.user.dni }}</div>
+          <a href="{% url 'scanAI:view_informe' paciente.id %}"  class="btn-custom btn-view-report loader-load">Ver Informe</a>
+        </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</div>
+
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+<script src="{% static 'js/modules/index_gestion_informe.js' %}"></script>
+
+</script>
+{% endblock %}

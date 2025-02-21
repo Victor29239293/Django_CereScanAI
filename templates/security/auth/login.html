@@ -1,0 +1,79 @@
+{% extends 'index.html' %}
+{% load static %}
+{% load socialaccount %}
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'css/login.css' %}" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans&family=Roboto&display=swap">
+
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 mb-4">
+      <form class="form shadow-lg p-4" method="POST" action="{% url 'security:custom_login' %}">
+        {% csrf_token %}
+        
+        <div class="flex-column">
+          <label>Email </label>
+        </div>
+        <div class="inputForm">
+          <svg height="20" viewBox="0 0 32 32" width="20" xmlns="http://www.w3.org/2000/svg"><g id="Layer_3" data-name="Layer 3"><path d="m30.853 13.87a15 15 0 0 0 -29.729 4.082 15.1 15.1 0 0 0 12.876 12.918 15.6 15.6 0 0 0 2.016.13 14.85 14.85 0 0 0 7.715-2.145 1 1 0 1 0 -1.031-1.711 13.007 13.007 0 1 1 5.458-6.529 2.149 2.149 0 0 1 -4.158-.759v-10.856a1 1 0 0 0 -2 0v1.726a8 8 0 1 0 .2 10.325 4.135 4.135 0 0 0 7.83.274 15.2 15.2 0 0 0 .823-7.455zm-14.853 8.13a6 6 0 1 1 6-6 6.006 6.006 0 0 1 -6 6z"></path></g></svg>
+          <input type="text" class="input {% if form.username.errors %}is-invalid{% endif %}" id="email" name="username" placeholder="Enter your Email" required value="{{ form.username.value|default_if_none:'' }}">
+          {% if form.username.errors %}
+            <div class="invalid-feedback">
+              {% for error in form.username.errors %}
+                {{ error }}
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="flex-column mt-3">
+          <label>Password </label>
+        </div>
+        <div class="inputForm">
+          <i class="fa-solid fa-eye-slash"></i>    
+          <input type="password" class="input {% if form.password.errors %}is-invalid{% endif %}" id="password" name="password" placeholder="Enter your Password" required>
+          {% if form.password.errors %}
+            <div class="invalid-feedback">
+              {% for error in form.password.errors %}
+                {{ error }}
+              {% endfor %}
+            </div>
+          {% endif %}
+          <svg viewBox="0 0 576 512" height="1em" xmlns="http://www.w3.org/2000/svg"><path d="..."></path></svg>
+        </div>
+
+        <div class="flex-row mt-3">
+          <div>
+            <input type="checkbox" id="remember_me">
+            <label for="remember_me">Remember me</label>
+          </div>
+            
+        </div>
+
+        <button type="submit" class="button-submit  btn-primary btn-block mt-4">Sign In</button>
+
+        <p class="p mt-3 text-center">
+          Don't have an account? <span class="span"><a href="{% url 'security:custom_register' %}" class="loader-load"  style="color: #2d79f3">Sign Up</a></span>
+        </p>
+
+        <p class="p line text-center">Or With</p>
+
+        <div class="flex-row">
+          <a href="{% provider_login_url 'google' %}" class="btn google loader-load">
+            <i class="fa-brands fa-google" style="color: #1363ec;"></i>
+            Google
+        </a>
+        
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+  </div>
+</div>
+
+<script src="{% static 'js/login.js' %}"></script>
+
+{% endblock %}

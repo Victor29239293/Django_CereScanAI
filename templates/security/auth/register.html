@@ -1,0 +1,100 @@
+{% extends 'index.html' %}
+{% load static socialaccount %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/register.css' %}" />
+
+<div class="container py-5 d-flex justify-content-center">
+  <div class="col-lg-6 col-md-10 col-sm-12 m">
+    <div class="card shadow-lg p-5 rounded">
+
+      <p class="title text-center mb-2">Sign up</p>
+      <p class="message text-center mb-4">Sign up now and get full access to our app.</p>
+
+
+      <div class="text-center mb-4">
+        <a href="{% provider_login_url 'google' %}" class="btn btn-google loader-load">
+          <i class="fa-brands fa-google me-2" style="color: #1363ec;"></i>
+          Sign up-Google
+        </a>
+      </div>
+
+      <div class="separator text-center">O</div>
+
+
+      <form class="form mt-4" method="POST" action="{% url 'security:custom_register' %}">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+
+        <div class="flex mb-3">
+          <label>
+            <input required type="text" class="input {% if form.first_name.errors %}is-invalid{% endif %}" name="first_name" value="{{ form.first_name.value|default_if_none:'' }}">
+            <span>Nombres</span>
+            <div class="invalid-feedback">{{ form.first_name.errors }}</div>
+          </label>
+
+          <label>
+            <input required type="text" class="input {% if form.last_name.errors %}is-invalid{% endif %}" name="last_name" value="{{ form.last_name.value|default_if_none:'' }}">
+            <span>Apellidos</span>
+            <div class="invalid-feedback">{{ form.last_name.errors }}</div>
+          </label>
+        </div>
+        <div class="flex mb-3">
+        <label >
+          <input required type="text" class="input {% if form.username.errors %}is-invalid{% endif %}" name="username" value="{{ form.username.value|default_if_none:'' }}">
+          <span>Username</span>
+          <div class="invalid-feedback">{{ form.username.errors }}</div>
+        </label>
+     
+
+        <label>
+          <input required type="text" class="input {% if form.dni.errors %}is-invalid{% endif %}" name="dni" value="{{ form.dni.value|default_if_none:'' }}">
+          <span>DNI</span>
+          <div class="invalid-feedback">{{ form.dni.errors }}</div>
+        </label>
+      </div>
+      <div class="flex mb-3">
+
+        <label >
+          <input required type="date" class="input {% if form.birth_date.errors %}is-invalid{% endif %}" name="birth_date" value="{{ form.birth_date.value|default_if_none:'' }}">
+      
+          <div class="invalid-feedback">{{ form.birth_date.errors }}</div>
+        </label>
+
+
+        <label >
+          <input required type="email" class="input {% if form.email.errors %}is-invalid{% endif %}" name="email" value="{{ form.email.value|default_if_none:'' }}">
+          <span>Correo electrónico</span>
+          <div class="invalid-feedback">{{ form.email.errors }}</div>
+        </label> 
+      </div>
+
+      <div class="flex mb-3">
+        <label style="position: relative;">
+          <i class="fa-solid fa-eye-slash" style="position: absolute; right: 15px; top: 17px"></i>
+          <input required type="password" class="input {% if form.password1.errors %}is-invalid{% endif %}" name="password1">
+          <span>Contraseña</span>
+          <div class="invalid-feedback">{{ form.password1.errors }}</div>
+        </label>
+
+      
+        <label  style="position: relative;">
+          <i class="fa-solid fa-eye-slash" style="position: absolute; right: 15px; top: 18px; z-index: 1;"></i>
+          <input required type="password" class="input {% if form.password2.errors %}is-invalid{% endif %}" name="password2">
+          <span>Confirmar contraseña</span>
+          <div class="invalid-feedback">{{ form.password2.errors }}</div>
+        </label>
+      </div>
+  
+        <button class="submit btn w-100" type="submit">Registrarse</button>
+
+
+        <p class="signin text-center mt-3 loader-load">¿Ya tienes una cuenta? <a href="{% url 'security:custom_login' %}" class="loader-load">Iniciar Sesión</a></p>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="{% static 'js/login.js' %}"></script>
+
+{% endblock %}

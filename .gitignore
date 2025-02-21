@@ -1,0 +1,26 @@
+# Entorno virtual
+venv/
+env/
+*.pyc
+__pycache__/
+
+# Variables de entorno
+.env
+
+# Migraciones de otras aplicaciones, excepto app1 y app2
+*/migrations/*
+!ScanAI/migrations/
+!ScanAI/migrations/__init__.py
+!security/migrations/
+!security/migrations/__init__.py
+
+# Archivos generados
+*.log
+*.pot
+*.pyc
+*.pyo
+*.sqlite3
+.DS_Store
+
+# Archivos de IDEs y editores
+.vscode/

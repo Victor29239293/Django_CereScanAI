@@ -1,0 +1,136 @@
+/* General Layout */
+.min-h-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f9fafb;
+  padding-top: 2rem;
+}
+
+.container {
+  background-color: #ffffff;
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  padding: 3rem;
+  margin-bottom: 3rem;
+  width: 100%;
+  max-width: 1000px;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Header with Gradient */
+.header-gradient {
+  background-color: #1a252f;
+  padding: 1.5rem;
+  text-align: center;
+  border-radius: 10px;
+  color: #fff;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Search Bar */
+.search-bar {
+  margin-bottom: 2.5rem;
+  text-align: center;
+}
+
+.search-input {
+  width: 80%;
+  max-width: 450px;
+  padding: 0.9rem;
+  border-radius: 8px;
+  border: 1px solid #1b59be;
+  font-size: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.search-input:focus {
+  border-color: #3b82f6;
+  outline: none;
+}
+
+/* Grid Layout */
+.grid-layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Patient Card */
+.patient-card {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.patient-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Icon */
+.folder-icon {
+  font-size: 4rem;
+  color: #08090a;
+  margin-bottom: 1rem;
+}
+.patient-photo {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 1rem;
+}
+
+/* Patient Info */
+.patient-name {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #1e40af;
+  margin-bottom: 0.5rem;
+}
+
+.patient-dni {
+  font-size: 1rem;
+  color: #64748b;
+  margin-bottom: 1rem;
+}
+
+/* Button Styles */
+.btn-custom {
+  padding: 0.6rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  color: #fff;
+  background-color: #3b82f6;
+}
+
+.btn-view-report {
+  background-color: #1a252f;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.btn-view-report:hover {
+  background-color: #0f4cf5;
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.5);
+  color: white;
+}
+
+/* Responsiveness */
+@media (max-width: 768px) {
+  .grid-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .search-input {
+    width: 90%;
+  }
+}

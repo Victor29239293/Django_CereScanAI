@@ -1,0 +1,101 @@
+{% extends 'Dashboard/base.html' %} {% load static %} {% block content %}
+<title>Lista de grupos modulos permisos</title>
+{% block css %}
+<link
+  rel="stylesheet"
+  href="{% static 'css/security/modules/grupomodulopermiso//list.css' %}"
+/>
+{% endblock css %}
+
+<div class="bg-white p-6 rounded-lg shadow-md">
+  <table class="w-full border-collapse table-hover">
+    <h2 class="text-xl font-semibold mb-4">Grupos Modulos Permisos Creados</h2>
+    <thead>
+      <tr>
+        <th class="border px-4 py-2">ID</th>
+        <th class="border px-4 py-2">Grupo</th>
+        <th class="border px-4 py-2">Modulo</th>
+        <th class="border px-4 py-2">Permisos</th>
+        <th class="border px-4 py-2">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in GroupModulePermissions %}
+      <tr>
+        <td class="px-6 py-4">{{ item.id }}</td>
+        <td class="px-6 py-4">{{ item.group.name }}</td>
+        <td class="px-6 py-4">{{ item.module.name }}</td>
+        <td class="px-6 py-4">
+          <div
+            id="dropdown{{ item.id }}"
+            class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-secundario absolute"
+          >
+            <ul
+              class="py-2 text-gray-700 dark:text-gray-200"
+              aria-labelledby="dropdownButton{{ item.id }}"
+            >
+              <span class="dark:text-blue-300 font-Tiny5 uppercase"
+                >Permisos:<br
+              /></span>
+              {% for permission in item.permissions.all %}
+              <li>
+                <a
+                  href="#"
+                  class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                >
+                  <span class="text-2xl dark:text-green-300 font-Pacifico"
+                    >{{ permission.name }}<br
+                  /></span>
+                </a>
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </td>
+        <td class="border px-4 py-2">
+          <a
+            href="{% url 'security:grupo_modulo_permiso_update' item.id %}"
+            class="text-blue-500 hover:underline loader-load"
+            ><i class="fa-solid fa-gear"></i
+          ></a>
+          |
+          <a
+            href="{% url 'security:grupo_modulo_permiso_delete' item.id %}"
+            class="text-red-500 hover:underline loader-load"
+            ><i class="fa-solid fa-trash"></i
+          ></a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="d-flex justify-content-center mt-4">
+    <nav aria-label="Navegación de páginas">
+      <ul class="pagination">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="?page=1">Anterior</a>
+        </li>
+        {% endif %} {% for num in page_obj.paginator.page_range %}
+        <li class="page-item {% if num == page_obj.number %}active{% endif %}">
+          <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+        </li>
+        {% endfor %} {% if page_obj.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.next_page_number }}"
+            >Siguiente</a
+          >
+        </li>
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
+  <div class="mb-4 text-right">
+    <a href="{% url 'security:view' %}" class="btn-blue loader-load">
+      Agregar Nuevo Grupo Modulo Permiso
+    </a>
+  </div>
+</div>
+
+{% endblock %}

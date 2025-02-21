@@ -1,0 +1,88 @@
+{% extends 'Dashboard/base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+<title>Información de Menú</title>
+
+{% block css %}
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/security/modules/form.css' %}">
+{% endblock css %}
+
+<section class="module-section mt-20">
+    <div class="module-header text-center" data-aos="fade" data-aos-delay="200">
+        <div class="flex flex-col items-center justify-center">
+            <span class="badge">{{ title1 }}</span>
+        </div>
+        <h1 class="dark:text-white text-4xl mt-6 font-Pacifico">{{ title2 }}</h1>
+        <p class="dark:text-gray-400 mt-6 text-lg font-light">
+            Complete el formulario para guardar un nuevo menú.
+        </p>
+    </div>
+
+    {% if messages %}
+    <div class="messages mt-4">
+        {% for message in messages %}
+        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}
+            {% if message.level_tag == 'error' %} bg-red-100 border-red-400 text-red-700
+            {% else %} bg-green-100 border-green-400 text-green-700
+            {% endif %} px-4 py-3 rounded relative mb-4" role="alert">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="module-form-container">
+        <form method="post" class="form-module space-y-6 py-4">
+            {% csrf_token %}
+            <div class="module-form-grid" data-aos="fade">
+                
+                <div class="info-panel" data-aos="fade-right" data-aos-delay="200">
+                    <i class="fa-solid fa-folder-minus"></i>
+                    <h2>Información del Menú</h2>
+                    <p>Gestione la información básica del menú y su icono desde este panel.</p>
+                </div>
+
+                <div class="form-fields p-4 rounded-3xl dark:bg-secundario bg-white" data-aos="fade-right" data-aos-delay="200">
+                    <div class="form-group">
+                        <label for="{{ form.name.id_for_label }}" class="form-label dark:text-blue-300 font-black uppercase text-lg">
+                            {{ form.name.label }}
+                        </label>
+                        <div class="input-container">
+                            {{ form.name }}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.icon.id_for_label }}" class="form-label dark:text-blue-300 font-black uppercase text-lg">
+                            {{ form.icon.label }}
+                        </label>
+                        <div class="input-container">
+                            {{ form.icon }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-save">
+                    <i class="fa-solid fa-save"></i>
+                    Guardar
+                </button>
+                <a href="{{ back_url }}" class="btn btn-cancel loader-load">
+                    <i class="fa-solid fa-xmark"></i>
+                    Cancelar
+                </a>
+            </div>
+            <div class="back-link">
+                <a href="{% url 'security:module_list' %}" class="loader-load">
+                    <i class="fa fa-arrow-left"></i>
+                    Regresar al listado
+                </a>
+            </div>
+        </form>
+    </div>
+</section>
+
+{% endblock content %}

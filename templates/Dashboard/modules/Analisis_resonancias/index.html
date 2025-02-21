@@ -1,0 +1,128 @@
+{% extends 'Dashboard/base.html' %}
+{% block content %}
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'css/modules/Analisis De Resonancias/index.css' %}" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css">
+
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <div class="card shadow border-0 rounded-lg">
+        <div class="card-header text-white text-center py-4 rounded-top">
+          <h2 class="mb-0 font-bold">Buscar Paciente</h2>
+        </div>
+        <div class="card-body p-5">
+     
+          <form method="GET" class="d-flex justify-content-center mb-4">
+            <input
+              type="text"
+              name="q"
+              placeholder="Buscar por Nombre o DNI"
+              class="form-control form-control-lg me-2 rounded-pill shadow-sm"
+              value="{{ request.GET.q }}"
+              style="max-width: 400px;"
+            />
+            <button type="submit" class="btn btn-primary btn-lg rounded-pill shadow-sm">
+              <i class="fas fa-search"></i> Buscar
+            </button>
+          </form>
+
+          {% if pacientes %}
+          <h3 class="text-center mb-4">Resultados</h3>
+          <div class="table-responsive">
+            <table class="table table-hover align-middle text-center">
+              <thead class="bg-primary text-white">
+                <tr>
+                  <th scope="col">Foto</th>
+                  <th scope="col">DNI</th>
+                  <th scope="col">Nombre</th>
+                  <th scope="col">Apellido</th>
+                  <th scope="col">Edad</th>
+                  <th scope="col" class="text-center">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for paciente in pacientes %}
+                <tr>
+                  <td>
+                    <div class="profile-image">
+                      {% if paciente.user.image %}
+                      <a href="{{ paciente.user.image.url }}" data-fancybox="profile" data-caption="Imagen de perfil">
+                        <img src="{{ paciente.user.image.url }}" alt="Imagen de perfil" />
+                      </a>
+                      {% else %}
+                      <a href="{% static 'images/perfil_usuario/default.png' %}" data-fancybox="profile" data-caption="Imagen de perfil predeterminada">
+                        <img src="{% static 'images/perfil_usuario/default.png' %}" alt="Imagen de perfil predeterminada" />
+                      </a>
+                      {% endif %}
+                    </div>
+                  </td>
+                  <td>{{ paciente.user.dni | upper }}</td>
+                  <td>{{ paciente.user.first_name | upper }}</td>
+                  <td>{{ paciente.user.last_name | upper }}</td>
+                  <td>{{ paciente.user.Paciente.edad }}</td>
+                  <td class="text-center">
+                    <a
+                      href="{% url 'ScanAI:upload_resonance' paciente.id %}"  
+                      class="btn btn-outline-success btn-sm mx-1 rounded-pill shadow-sm loader-load"
+                    >
+                      <i class="fas fa-upload"></i> Subir Resonancia
+                    </a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+          <nav aria-label="Page navigation" class="d-flex justify-content-center">
+            <ul class="pagination pagination-lg">
+              {% if pacientes.has_previous %}
+              <li class="page-item">
+                <a class="page-link" href="?page={{ pacientes.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Previous">
+                  <span aria-hidden="true">&laquo;</span>
+                </a>
+              </li>
+              {% endif %}
+              
+              {% for num in pacientes.paginator.page_range %}
+              <li class="page-item {% if pacientes.number == num %}active{% endif %}">
+                <a class="page-link" href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+                  {{ num }}
+                </a>
+              </li>
+              {% endfor %}
+
+              {% if pacientes.has_next %}
+              <li class="page-item">
+                <a class="page-link" href="?page={{ pacientes.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Next">
+                  <span aria-hidden="true">&raquo;</span>
+                </a>
+              </li>
+              {% endif %}
+            </ul>
+          </nav>
+          
+          {% else %}
+          <div class="alert alert-warning text-center" role="alert">
+            No se encontraron pacientes.
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  Fancybox.bind("[data-fancybox]", {
+    Toolbar: {
+      display: ["close"],
+    },
+    Image: {
+      zoom: true,
+    },
+  });
+</script>
+{% endblock %}

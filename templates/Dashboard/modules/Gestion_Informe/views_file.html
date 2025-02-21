@@ -1,0 +1,88 @@
+{% extends 'Dashboard/base.html' %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css">
+<link rel="stylesheet" href="{% static 'css/modules/Gestion De Informes/views_file.css' %}" />
+<script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script>
+<div class="min-h-screen">
+  <div class="container-fullscreen">
+    <div class="header-gradient">
+      <h2>Informe de resonancia magnética del paciente</h2>
+    </div>
+
+
+    <div class="patient-card">
+      <div class="profile-image">
+        {% if paciente.user.image %}
+        <a href="{{ paciente.user.image.url }}" data-fancybox="profile" data-caption="Profile Image">
+          <img src="{{ paciente.user.image.url }}" alt="Profile Image" />
+        </a>
+        {% else %}
+        <a href="{% static 'images/perfil_usuario/default.png' %}" data-fancybox="profile" data-caption="Default Profile Image">
+          <img src="{% static 'images/perfil_usuario/default.png' %}" alt="Default Profile Image" />
+        </a>
+        {% endif %}
+      </div>
+      <div class="patient-content">
+        <div class="patient-header">Informacion Del Paciente</div>
+        <p><strong>Nombres:</strong> {{ paciente.user.get_full_name }}</p>
+        <p><strong>DNI:</strong> {{ paciente.user.dni }}</p>
+        <p><strong>Fecha de Nacimiento:</strong> {{ paciente.user.birth_date }} ({{ paciente.edad }})</p>
+      
+        <p><strong>Telefeno:</strong> {{ paciente.user.phone }}</p>
+        <p><strong>Direccion:</strong> {{ paciente.user.direction }}</p>
+        <p><strong>Email:</strong> {{ paciente.user.email }}</p>
+      </div>
+    </div>
+
+
+    {% for resonancia in resonancias %}
+      <div class="section-card">
+        <h3 class="section-header">MRI #{{ forloop.counter }}</h3>
+        <div class="section-content">
+          <p><strong>Fecha:</strong> {{ resonancia.fecha }}</p>
+          <p><strong>Tipo de Anomalia:</strong> {{ resonancia.tipo_anomalia|default:"N/A" }}</p>
+          <p><strong>Severidad De la Anomalia:</strong> {{ resonancia.severidad_anomalia|default:"N/A" }}</p>
+          <p><strong>Recomendacion Medica:</strong> {{ resonancia.recomendacion_medica|default:"N/A" }}</p>
+          
+          {% if resonancia.imagenes.all %}
+            <div class="imagenes">
+              <p><strong>MRI Images:</strong></p>           
+              {% for imagen in resonancia.imagenes.all %}
+                <a href="{{ imagen.imagen.url }}" data-fancybox="gallery{{ forloop.counter }}" data-caption="MRI Image {{ forloop.counter }}">
+                  <img src="{{ imagen.imagen.url }}" alt="MRI Image">
+                </a>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div><br>
+
+        <button onclick="window.location.href='{% url 'scanAI:generate_pdf_report' patient_id=paciente.id resonancia_id=resonancia.id %}'" class="btn-custom">
+          Descargar Reporte PDF
+      </button>
+      
+      </div>
+
+      <div class="divider"></div>
+    {% empty %}
+      <div class="alert alert-warning" role="alert">
+        No MRI reports available for this patient.
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+  Fancybox.bind("[data-fancybox]", {
+    Toolbar: {
+      display: ["zoom", "close"],
+    },
+    Image: {
+      zoom: true,
+      click: "toggleZoom",
+      wheel: "zoom",
+    },
+  });
+</script>
+
+{% endblock %}

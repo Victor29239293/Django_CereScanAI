@@ -1,0 +1,122 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block custom_css %}
+<link rel="stylesheet" href="{% static 'css/perfil/editar_perfil.css' %}" />
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Roboto:wght@400;500;700&display=swap"
+/>
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css"
+/>
+{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+  <div class="profile-header">
+    <div class="profile-image">
+      {% if user.image %}
+      <a href="{{ user.image.url }}" data-fancybox="profile" data-caption="Imagen de perfil">
+        <img src="{{ user.image.url }}" alt="Imagen de perfil" id="imagenSeleccionada" />
+      </a>
+      {% else %}
+      <a href="{% static 'images/perfil_usuario/default.png' %}" data-fancybox="profile" data-caption="Imagen de perfil predeterminada">
+        <img src="{% static 'images/perfil_usuario/default.png' %}" alt="Imagen de perfil predeterminada" id="imagenSeleccionada" />
+      </a>
+      {% endif %}
+      {{ form.image }}
+    </div>
+    
+    <div class="user-name">
+      <h1>{{ user.first_name.upper }} {{ user.last_name.upper }}</h1>
+      <div class="message-link">
+        <a href="#" class="mensaje-btn">
+          <i class="fas fa-envelope"></i> Mensaje
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <form method="post" enctype="multipart/form-data" class="profile-details">
+    {% csrf_token %}
+    
+    <div class="details-header">
+      <h2>Editar Perfil</h2>
+      <a href="{% url 'security:perfil' %}" class="btn-back loader-load" >Cancelar</a>
+    </div>
+
+    <div class="details-section">
+      <div class="details-grid">
+        <div class="detail-item">
+          <label for="{{ form.username.id_for_label }}">Nombre de usuario</label>
+          {{ form.username }}
+        </div>
+
+        <div class="detail-item">
+          <label for="{{ form.first_name.id_for_label }}">Nombre</label>
+          {{ form.first_name }}
+        </div>
+
+        <div class="detail-item">
+          <label for="{{ form.last_name.id_for_label }}">Apellido</label>
+          {{ form.last_name }}
+        </div>
+
+        <div class="detail-item">
+          <label for="{{ form.dni.id_for_label }}">DNI</label>
+          {{ form.dni }}
+        </div>
+
+        <div class="detail-item">
+          <label for="{{ form.birth_date.id_for_label }}">Fecha de nacimiento</label>
+          {{ form.birth_date }}
+        </div>
+
+        <div class="detail-item">
+          <label for="{{ form.direction.id_for_label }}">Dirección</label>
+          {{ form.direction }}
+        </div>
+
+        <div class="detail-item">
+          <label for="{{ form.phone.id_for_label }}">Teléfono</label>
+          {{ form.phone }}
+        </div>
+        
+        <div class="detail-item">
+          <label for="{{ form.image.id_for_label }}">Imagen de Perfil</label>
+          {{ form.image }}
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-actions">
+      <button type="submit" class="btn btn-success">Guardar</button>
+      <a href="{% url 'security:perfil' %}" class="btn btn-danger loader-load" >Cancelar</a>
+    </div>
+  </form>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+<script>
+  $(document).ready(function () {
+    $('[data-fancybox="profile"]').fancybox();
+  });
+
+  const imagenInput = document.getElementById('{{ form.image.id_for_label }}');
+  const imagenSeleccionada = document.getElementById('imagenSeleccionada');
+
+  imagenInput.addEventListener('change', function () {
+    const file = imagenInput.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        imagenSeleccionada.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+</script>
+{% endblock %}

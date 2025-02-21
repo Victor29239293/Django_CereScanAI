@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Informe de Resonancia Magnética</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            margin: 30px;
+            line-height: 1.6;
+            background-color: #f4f6f9;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 4px solid #0056b3;
+            padding-bottom: 15px;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        .logo {
+            position: absolute;
+            top: -10px;
+            left: 0;
+            width: 120px;
+            height: auto;
+        }
+        h1 {
+            color: #0056b3;
+            font-size: 28px;
+            margin: 0;
+        }
+        .sub-header {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .section h2 {
+            background-color: #0056b3;
+            color: #fff;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        .section h3 {
+            color: #0056b3;
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+        .content p, .content span {
+            margin: 8px 0;
+            font-size: 15px;
+        }
+        .content p strong {
+            font-weight: 600;
+            color: #333;
+        }
+        .resonance-section {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            background-color: #f9fafc;
+            margin-top: 15px;
+        }
+        .image-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .image-container img {
+            width: 180px;
+            height: auto;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+        .image-container img:hover {
+            transform: scale(1.05);
+            border-color: #0056b3;
+        }
+        .footer {
+            text-align: center;
+            font-size: 13px;
+            color: #999;
+            margin-top: 40px;
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <i class="bx bxs-brain nav_logo-icon"></i>
+        <h1>Informe de Resonancia Magnética</h1>
+        <p class="sub-header">Paciente: {{ patient.user.get_full_name }}</p>
+        <p class="sub-header">Fecha de Descarga: {{ current_date|date:"d/m/Y" }}</p>
+    </div>
+
+ 
+    <div class="section">
+        <h2>Información del Paciente</h2>
+        <div class="content">
+            <p><strong>Nombres:</strong> {{ patient.user.get_full_name }}</p>
+            <p><strong>DNI:</strong> {{ patient.user.dni }}</p>
+            <p><strong>Fecha de Nacimiento:</strong> {{ patient.user.birth_date }}</p>
+            <p><strong>Edad:</strong> {{ patient.edad }}</p>
+            <p><strong>Teléfono:</strong> {{ patient.user.phone }}</p>
+            <p><strong>Dirección:</strong> {{ patient.user.direction }}</p>
+            <p><strong>Email:</strong> {{ patient.user.email }}</p>
+        </div>
+    </div>
+
+
+    {% for resonance in resonances %}
+    <div class="section resonance-section">
+        <h3>Resonancia #{{ forloop.counter }}</h3>
+        <p><strong>Fecha:</strong> {{ resonance.fecha }}</p>
+        <p><strong>Tipo de Anomalía:</strong> {{ resonance.tipo_anomalia|default:"N/A" }}</p>
+        <p><strong>Severidad de la Anomalía:</strong> {{ resonance.severidad_anomalia|default:"N/A" }}</p>
+        <p><strong>Recomendación Médica:</strong> {{ resonance.recomendacion_medica|default:"N/A" }}</p>
+
+   
+        {% if resonance.imagenes.all %}
+        <div class="image-container">
+            {% for image_url in resonance.images %}
+                <img src="{{ image_url }}" alt="Imagen de Resonancia {{ forloop.counter }}">
+            {% endfor %}
+        </div>
+        {% else %}
+            <p>No hay imágenes disponibles para esta resonancia.</p>
+        {% endif %}
+    </div>
+    {% endfor %}
+
+    {% if not resonances %}
+    <div class="section">
+        <p>No hay informes de resonancia disponibles para este paciente.</p>
+    </div>
+    {% endif %}
+
+
+    <div class="footer">
+        <p>Este informe es confidencial y está destinado únicamente para fines médicos.</p>
+    </div>
+
+</body>
+</html>

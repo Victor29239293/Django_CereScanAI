@@ -1,0 +1,76 @@
+{% extends 'Dashboard/base.html' %}
+{% load static %}
+{% block content %}
+<title>Lista de modulos</title> 
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/security/modules/list.css' %}">
+{% endblock css %}
+
+<div class="bg-white p-6 rounded-lg shadow-md ">
+    <table class="w-full border-collapse table-hover">
+        <h2 class="text-xl font-semibold mb-4">Módulos Creados</h2>
+        <thead>
+            <tr>
+                <th class="border px-4 py-2">ID</th>
+                <th class="border px-4 py-2">Nombre</th>
+                <th class="border px-4 py-2">Menú</th>
+                <th class="border px-4 py-2">Icono</th>
+                <th class="border px-4 py-2">Activo</th>
+                <th class="border px-4 py-2">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in modulos %}
+            <tr>
+                <td class="border px-4 py-2">{{ item.id }}</td>
+                <td class="border px-4 py-2">{{ item.name }}</td>
+                <td class="border px-4 py-2">{{ item.menu.name }}</td>
+                <td class="border px-4 py-2"> <i class="{{ item.icon }}"></i></td>
+                <td class="border px-4 py-2">
+                    {% if item.is_active %}
+                        <i class="fa-solid fa-check text-green-500"></i>
+                    {% else %}
+                        <i class="fa-solid fa-eye-slash text-red-500"></i>
+                    {% endif %}
+                </td>
+                <td class="border px-4 py-2">
+                    <a href="{% url 'security:modulo_update' item.id %}" class="text-blue-500 hover:underline loader-load"><i class="fa-solid fa-gear"></i></a> |
+                    <a href="{% url 'security:modulo_delete' item.id %}" class="text-red-500 hover:underline loader-load"><i class="fa-solid fa-trash"></i></a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+<div class="d-flex justify-content-center mt-4">
+    <nav aria-label="Navegación de páginas">
+        <ul class="pagination">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1">Anterior</a>
+            </li>
+            {% endif %}
+            
+            {% for num in page_obj.paginator.page_range %}
+            <li class="page-item {% if num == page_obj.number %}active{% endif %}">
+                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+            </li>
+            {% endfor %}
+            
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Siguiente</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+    <div class="mb-4 text-right">
+        <a href="{% url 'security:modulo_create' %}" class="btn-blue loader-load">
+            Agregar Nuevo Módulo
+        </a>
+    </div>
+</div>
+
+{% endblock %}
+
